@@ -1,15 +1,6 @@
 import SpriteAnimator from "./SpriteAnimator.jsx";
 
-const SPRITE_CONFIG = {
-  sheetCols: 3,
-  sheetRows: 4,
-  frameWidth: 32,
-  frameHeight: 48,
-  fps: 8,
-  scale: 1.5 // Adjusted scale to be visible but not huge
-};
-
-export default function Character({ name, role, status, sprite, title, position, zIndex }) {
+export default function Character({ name, role, status, sprite, cols, rows, title, position, zIndex }) {
   const isWorking = status === "WORKING" || status === "MERGING";
   
   // Logic: 
@@ -23,18 +14,18 @@ export default function Character({ name, role, status, sprite, title, position,
       style={{ ...position, zIndex }}
       title={title}
     >
-      <div className="character-sprite-container">
+      <div 
+        className="character-sprite-container"
+        style={{ width: '48px', height: '48px' }}
+      >
         {sprite ? (
           <SpriteAnimator 
             src={sprite}
-            sheetCols={SPRITE_CONFIG.sheetCols}
-            sheetRows={SPRITE_CONFIG.sheetRows}
-            frameWidth={SPRITE_CONFIG.frameWidth}
-            frameHeight={SPRITE_CONFIG.frameHeight}
+            sheetCols={cols}
+            sheetRows={rows}
             animate={true}
             row={animationRow}
-            fps={SPRITE_CONFIG.fps}
-            scale={SPRITE_CONFIG.scale}
+            fps={8}
           />
         ) : (
           <div className="character-avatar">{name?.charAt(0) ?? "?"}</div>

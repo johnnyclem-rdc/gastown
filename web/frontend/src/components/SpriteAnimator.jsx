@@ -3,19 +3,16 @@ import { useEffect, useState } from "react";
 export default function SpriteAnimator({
   src,
   sheetCols = 3,
-  sheetRows = 4,
-  frameWidth = 32,
-  frameHeight = 32,
-  animate = true,
+  sheetRows = 1,
   row = 0,
-  fps = 8,
-  scale = 1
+  animate = false,
+  fps = 8
 }) {
-  const [currentFrame, setCurrentFrame] = useState(animate ? 0 : 1);
+  const [currentFrame, setCurrentFrame] = useState(0);
 
   useEffect(() => {
     if (!animate) {
-      setCurrentFrame(1); // Static pose (middle column usually)
+      setCurrentFrame(0);
       return;
     }
 
@@ -26,35 +23,32 @@ export default function SpriteAnimator({
     return () => clearInterval(interval);
   }, [animate, sheetCols, fps]);
 
-  // Calculate shift
-  const x = -(currentFrame * frameWidth);
-  const y = -(row * frameHeight);
+  // CSS Math
+  const bgSizeX = sheetCols * 100;
+  const bgSizeY = sheetRows * 100;
+
+  // Avoid division by zero if sheet has 1 col/row
+  const bgPosX = sheetCols > 1 ? (currentFrame / (sheetCols - 1)) * 100 : 0;
+  const bgPosY = sheetRows > 1 ? (row / (sheetRows - 1)) * 100 : 0;
 
   return (
     <div
       style={{
-        width: `${frameWidth}px`,
-        height: `${frameHeight}px`,
-        overflow: "hidden",
-        position: "relative",
-        transform: `scale(${scale})`,
-        transformOrigin: "bottom center",
-        imageRendering: "pixelated", // Critical for pixel art
-        filter: "drop-shadow(0px 4px 4px rgba(0,0,0,0.3))" // Shadow for pop
+        width: "100%",
+        height: "100%",
+        overflow: "hidden"
       }}
     >
-      <img
-        src={src}
-        alt="sprite"
+      <div
         style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          // We don't set width/height on the img, we let it be its natural size
-          // but we transform it to show the window
-          transform: `translate(${x}px, ${y}px)`,
-          maxWidth: "none", // Prevent css constraints from shrinking the sheet
-          maxHeight: "none"
+          width: "100%",
+          height: "100%",
+          backgroundImage: `url(${src})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: `${bgSizeX}% ${bgSizeY}%`,
+          backgroundPosition: `${bgPosX}% ${bgPosY}%`,
+          mixBlendMode: "multiply", // Hides the white background
+          filter: "contrast(1.1)" // Pop the colors slightly
         }}
       />
     </div>

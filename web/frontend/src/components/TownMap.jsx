@@ -29,23 +29,33 @@ const statusToZone = {
 const zoneSprites = {
   city_hall: {
     sprite: cityHallImg,
-    emoji: "🏛️"
+    emoji: "🏛️",
+    cols: 3,
+    rows: 3
   },
   approval_office: {
     sprite: reviewStationImg,
-    emoji: "📋"
+    emoji: "📋",
+    cols: 3,
+    rows: 3
   },
   merge_depot: {
     sprite: depotImg,
-    emoji: "🚌"
+    emoji: "🚌",
+    cols: 2,
+    rows: 3
   },
   residential_district: {
     sprite: houseImg,
-    emoji: "🏡"
+    emoji: "🏡",
+    cols: 3,
+    rows: 3
   },
   commercial_district: {
     sprite: officeImg,
-    emoji: "🏢"
+    emoji: "🏢",
+    cols: 3,
+    rows: 3
   }
 };
 
@@ -53,6 +63,11 @@ const roleSprites = {
   mayor: charMayor,
   engineer: charEngineer,
   polecat: charPolecat
+};
+
+const characterConfig = {
+  cols: 3,
+  rows: 4
 };
 
 function toIso(gridX, gridY, origin) {
@@ -315,6 +330,8 @@ export default function TownMap() {
                   position={position}
                   zIndex={zIndex}
                   sprite={asset.sprite}
+                  cols={asset.cols}
+                  rows={asset.rows}
                   fallbackEmoji={asset.emoji}
                 />
               );
@@ -326,6 +343,8 @@ export default function TownMap() {
                 role={agent.role}
                 status={agent.status}
                 sprite={agent.sprite}
+                cols={characterConfig.cols}
+                rows={characterConfig.rows}
                 title={`${agent.name} (${agent.role})`}
                 position={agent.isoPosition}
                 zIndex={agent.zIndex}
