@@ -29,71 +29,362 @@ body {
 }
 
 .town-map {
+
   display: flex;
+
   justify-content: center;
+
   align-items: center;
-  padding: 24px 0 48px;
+
+  padding: 0;
+
+  width: 100vw;
+
+  height: 100vh;
+
+  overflow: hidden;
+
+  background: #5c9e68;
+
+  position: relative;
+
 }
+
+
+
+.viewport {
+
+  width: 100%;
+
+  height: 100%;
+
+  overflow: hidden;
+
+  position: relative;
+
+  cursor: grab;
+
+}
+
+
+
+.viewport:active {
+
+  cursor: grabbing;
+
+}
+
+
+
+.world {
+
+  position: absolute;
+
+  transform-origin: 0 0;
+
+  transition: transform 0.1s ease-out;
+
+  will-change: transform;
+
+}
+
+
 
 .grid {
+
   position: relative;
-  background: radial-gradient(circle at top, #ffffff 0%, #f4efe2 45%, #e9e3d2 100%);
-  border-radius: 24px;
-  box-shadow: 0 24px 45px rgba(18, 18, 18, 0.15);
-  overflow: visible;
+
+  /* Remove fixed background here, it moves with the world */
+
+  /* background: radial-gradient... moved to a lower layer or handled differently if we want parallax */
+
 }
+
+
 
 .zone {
+
   position: absolute;
+
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   transform: translate(-50%, -100%);
+
   text-align: center;
+
   pointer-events: none;
+
 }
+
+
+
+.zone-sprite {
+
+  /* Common container for both img and fallback */
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-end;
+
+}
+
+
 
 .zone-sprite img {
-  width: 96px;
-  height: 96px;
+
+
+
+  /* Assumes zone assets are single images, if they are sheets, we need to clip them too */
+
+
+
+  width: auto;
+
+
+
+  height: auto;
+
+
+
+  max-width: 128px;
+
+
+
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.2));
+
+
+
 }
+
+
+
+
+
+
 
 .zone-fallback {
+
+
+
+  /* Only show box if falling back to emoji */
+
+
+
   width: 72px;
+
+
+
   height: 72px;
+
+
+
   border-radius: 16px;
+
+
+
   background: #fff7ed;
+
+
+
   border: 2px solid #d6cbb5;
+
+
+
   display: grid;
+
+
+
   place-items: center;
+
+
+
   font-size: 28px;
+
+
+
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
+
+
+
 }
+
+
+
+
+
+
 
 .zone-label {
+
+
+
   margin-top: 4px;
+
+
+
   padding: 2px 8px;
+
+
+
   border-radius: 999px;
+
+
+
   background: rgba(255, 255, 255, 0.9);
+
+
+
   font-size: 10px;
+
+
+
   text-transform: uppercase;
+
+
+
   letter-spacing: 0.08em;
+
+
+
   color: #3f3f46;
+
+
+
+  white-space: nowrap;
+
+
+
 }
+
+
+
+
+
+
 
 .character {
+
+
+
   position: absolute;
-  width: 32px;
-  height: 32px;
+
+
+
+  /* Centering on the tile coordinate */
+
+
+
   transform: translate(-50%, -100%);
+
+
+
   transition: top 1s linear, left 1s linear;
+
+
+
+  display: flex;
+
+
+
+  flex-direction: column;
+
+
+
+  align-items: center;
+
+
+
+  justify-content: flex-end;
+
+
+
   pointer-events: none;
+
+
+
+  z-index: 100;
+
+
+
 }
 
-.character.is-idle {
-  opacity: 0.5;
+
+
+
+
+
+
+.character-sprite-container {
+
+
+
+  display: flex;
+
+
+
+  justify-content: center;
+
+
+
+  align-items: flex-end;
+
+
+
+  /* No background or border to let sprite blend */
+
+
+
 }
+
+
+
+.character-idle {
+
+  opacity: 0.8;
+
+}
+
+
+
+.status-indicator {
+
+  position: absolute;
+
+  top: -40px;
+
+  font-size: 20px;
+
+  animation: bounce 1s infinite;
+
+  z-index: 101;
+
+}
+
+
+
+@keyframes bounce {
+
+  0%, 100% {
+
+    transform: translateY(0);
+
+  }
+
+  50% {
+
+    transform: translateY(-5px);
+
+  }
+
+}
+
+
 
 .character-avatar {
   width: 32px;
@@ -102,41 +393,127 @@ body {
   background: #ffffff;
   color: #1f2937;
   display: grid;
+
   place-items: center;
+
   font-size: 12px;
+
   font-weight: 600;
+
   border: 2px solid #ffffff;
+
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
+
 }
 
-.character-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
 
-.character-status {
+
+/* Minimap */
+
+.minimap-container {
+
   position: absolute;
-  left: 50%;
-  top: -18px;
-  transform: translateX(-50%);
-  font-size: 12px;
-  animation: bounce 1.2s ease-in-out infinite;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+
+  bottom: 20px;
+
+  right: 20px;
+
+  width: 200px;
+
+  height: 150px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  border: 2px solid #ccc;
+
+  border-radius: 8px;
+
+  overflow: hidden;
+
+  z-index: 5000;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
 }
 
-.character-status.is-working {
-  animation-duration: 0.9s;
+
+
+.minimap-content {
+
+  width: 100%;
+
+  height: 100%;
+
+  position: relative;
+
 }
 
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translate(-50%, 0);
-  }
-  50% {
-    transform: translate(-50%, -6px);
-  }
+
+
+.minimap-dot {
+
+  position: absolute;
+
+  width: 4px;
+
+  height: 4px;
+
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+
+}
+
+
+
+/* Controls */
+
+.map-controls {
+
+  position: absolute;
+
+  bottom: 20px;
+
+  left: 20px;
+
+  display: flex;
+
+  gap: 8px;
+
+  z-index: 5000;
+
+}
+
+
+
+.control-btn {
+
+  background: white;
+
+  border: 1px solid #ccc;
+
+  border-radius: 4px;
+
+  width: 32px;
+
+  height: 32px;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  display: grid;
+
+  place-items: center;
+
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+}
+
+
+
+.control-btn:hover {
+
+  background: #f0f0f0;
+
 }
