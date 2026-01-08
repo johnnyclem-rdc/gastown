@@ -284,11 +284,11 @@ func TestConvoyHandler_MergeQueueRendering(t *testing.T) {
 	}
 
 	// Check CI status badges
-	if !strings.Contains(body, "ci-pass") {
-		t.Error("Response should contain ci-pass class for passing PR")
+	if !strings.Contains(body, "mq-green") {
+		t.Error("Response should contain mq-green class for passing PR")
 	}
-	if !strings.Contains(body, "ci-pending") {
-		t.Error("Response should contain ci-pending class for pending PR")
+	if !strings.Contains(body, "mq-yellow") {
+		t.Error("Response should contain mq-yellow class for pending PR")
 	}
 }
 
@@ -356,7 +356,7 @@ func TestConvoyHandler_PolecatWorkersRendering(t *testing.T) {
 	body := w.Body.String()
 
 	// Check polecat section header
-	if !strings.Contains(body, "Polecat Workers") {
+	if !strings.Contains(body, "Polecat Agents &amp; Field Operations") {
 		t.Error("Response should contain polecat workers section header")
 	}
 
@@ -576,7 +576,7 @@ func TestConvoyHandler_FullDashboard(t *testing.T) {
 	body := w.Body.String()
 
 	// Verify all three sections are present
-	if !strings.Contains(body, "Gas Town Convoys") {
+	if !strings.Contains(body, "Gas Town Town Hall") {
 		t.Error("Response should contain main header")
 	}
 	if !strings.Contains(body, "hq-cv-full") {
@@ -588,7 +588,7 @@ func TestConvoyHandler_FullDashboard(t *testing.T) {
 	if !strings.Contains(body, "#789") {
 		t.Error("Response should contain PR data")
 	}
-	if !strings.Contains(body, "Polecat Workers") {
+	if !strings.Contains(body, "Polecat Agents &amp; Field Operations") {
 		t.Error("Response should contain polecat section")
 	}
 	if !strings.Contains(body, "worker1") {
@@ -676,14 +676,14 @@ func TestE2E_Server_FullDashboard(t *testing.T) {
 		name    string
 		content string
 	}{
-		{"Convoy section header", "Gas Town Convoys"},
+		{"Convoy section header", "Convoys &amp; Asset Progress"},
 		{"Convoy ID", "hq-cv-e2e"},
 		{"Convoy title", "E2E Test Convoy"},
 		{"Convoy progress", "2/4"},
 		{"Merge queue section", "Refinery Merge Queue"},
 		{"PR number", "#101"},
 		{"PR repo", "roxas"},
-		{"Polecat section", "Polecat Workers"},
+		{"Polecat section", "Polecat Agents &amp; Field Operations"},
 		{"Polecat name", "furiosa"},
 		{"Polecat status", "Running E2E tests"},
 		{"HTMX auto-refresh", `hx-trigger="every 10s"`},
@@ -792,10 +792,10 @@ func TestE2E_Server_MergeQueueStatuses(t *testing.T) {
 		wantCI     string
 		wantMerge  string
 	}{
-		{"green when ready", "pass", "ready", "mq-green", "ci-pass", "merge-ready"},
-		{"red when CI fails", "fail", "ready", "mq-red", "ci-fail", "merge-ready"},
-		{"red when conflict", "pass", "conflict", "mq-red", "ci-pass", "merge-conflict"},
-		{"yellow when pending", "pending", "pending", "mq-yellow", "ci-pending", "merge-pending"},
+		{"green when ready", "pass", "ready", "mq-green", "mq-green", "mq-green"},
+		{"red when CI fails", "fail", "ready", "mq-red", "mq-red", "mq-green"},
+		{"red when conflict", "pass", "conflict", "mq-red", "mq-green", "mq-red"},
+		{"yellow when pending", "pending", "pending", "mq-yellow", "mq-yellow", "mq-yellow"},
 	}
 
 	for _, tt := range tests {
@@ -832,7 +832,7 @@ func TestE2E_Server_MergeQueueStatuses(t *testing.T) {
 			body := string(bodyBytes)
 
 			if !strings.Contains(body, tt.colorClass) {
-				t.Errorf("Should contain row class %q", tt.colorClass)
+				t.Errorf("Should contain status class %q", tt.colorClass)
 			}
 			if !strings.Contains(body, tt.wantCI) {
 				t.Errorf("Should contain CI class %q", tt.wantCI)
@@ -884,7 +884,7 @@ func TestE2E_Server_HTMLStructure(t *testing.T) {
 	}
 
 	// Validate CSS variables for theming
-	cssVars := []string{"--bg-dark", "--green", "--yellow", "--red"}
+	cssVars := []string{"--bg", "--text-primary", "--accent", "--shadow-dark"}
 	for _, v := range cssVars {
 		if !strings.Contains(body, v) {
 			t.Errorf("Should contain CSS variable %q", v)
