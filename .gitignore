@@ -49,3 +49,6 @@ CLAUDE.md
 
 # Embedded formulas are committed so `go install @latest` works
 # Run `go generate ./...` after modifying .beads/formulas/
+
+internal/web/frontend/assets/*.js
+internal/web/frontend/assets/*.css
