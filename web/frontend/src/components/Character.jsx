@@ -1,31 +1,21 @@
 import SpriteAnimator from "./SpriteAnimator.jsx";
 
 const SPRITE_CONFIG = {
+  sheetCols: 3,
+  sheetRows: 4,
   frameWidth: 32,
-  frameHeight: 48, // Updated height
-  totalFrames: 4,
+  frameHeight: 48,
   fps: 8,
-  scale: 2
+  scale: 1.5 // Adjusted scale to be visible but not huge
 };
 
 export default function Character({ name, role, status, sprite, title, position, zIndex }) {
-  const isIdle = status === "IDLE";
   const isWorking = status === "WORKING" || status === "MERGING";
   
   // Logic: 
-  // Working -> Row 1 (Action)
-  // Idle -> Row 0, but pause animation (fps=0)
-  // Default -> Row 0, animated (Walking)
-  
-  let animationRow = 0;
-  let fps = SPRITE_CONFIG.fps;
-
-  if (isWorking) {
-    animationRow = 1;
-  } else if (isIdle) {
-    animationRow = 0;
-    fps = 0; // Pause
-  }
+  // Working -> Row 2 (Right/Side view usually action)
+  // Idle/Default -> Row 0 (Down/Front view)
+  const animationRow = isWorking ? 2 : 0;
 
   return (
     <div
@@ -33,18 +23,17 @@ export default function Character({ name, role, status, sprite, title, position,
       style={{ ...position, zIndex }}
       title={title}
     >
-      <div 
-        className="character-sprite-container"
-        style={{ filter: "drop-shadow(0px 4px 4px rgba(0,0,0,0.3))" }}
-      >
+      <div className="character-sprite-container">
         {sprite ? (
           <SpriteAnimator 
             src={sprite}
+            sheetCols={SPRITE_CONFIG.sheetCols}
+            sheetRows={SPRITE_CONFIG.sheetRows}
             frameWidth={SPRITE_CONFIG.frameWidth}
             frameHeight={SPRITE_CONFIG.frameHeight}
-            totalFrames={SPRITE_CONFIG.totalFrames}
-            animationRow={animationRow}
-            fps={fps}
+            animate={true}
+            row={animationRow}
+            fps={SPRITE_CONFIG.fps}
             scale={SPRITE_CONFIG.scale}
           />
         ) : (

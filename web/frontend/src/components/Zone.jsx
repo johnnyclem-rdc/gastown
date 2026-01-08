@@ -4,16 +4,16 @@ import SpriteAnimator from "./SpriteAnimator.jsx";
 export default function Zone({ label, position, zIndex, sprite, fallbackEmoji }) {
   const [imgError, setImgError] = useState(false);
 
-  // Default config for buildings
-  // We assume buildings are static images (1 frame), but we use SpriteAnimator 
-  // to ensure pixelated rendering and consistent scaling if needed.
-  // If the sprite is a sheet, this will just show the top-left frame.
+  // Default config for buildings (Sprite Sheets 3x3)
   const SPRITE_CONFIG = {
-    frameWidth: 128,
-    frameHeight: 128, 
-    totalFrames: 1,
-    fps: 0, // Static
-    scale: 1
+    sheetCols: 3,
+    sheetRows: 3,
+    frameWidth: 96,
+    frameHeight: 96, 
+    animate: false,
+    row: 0,
+    fps: 0, 
+    scale: 1.5
   };
 
   return (
@@ -22,9 +22,12 @@ export default function Zone({ label, position, zIndex, sprite, fallbackEmoji })
         {sprite && !imgError ? (
           <SpriteAnimator 
             src={sprite} 
+            sheetCols={SPRITE_CONFIG.sheetCols}
+            sheetRows={SPRITE_CONFIG.sheetRows}
             frameWidth={SPRITE_CONFIG.frameWidth}
             frameHeight={SPRITE_CONFIG.frameHeight}
-            totalFrames={SPRITE_CONFIG.totalFrames}
+            animate={SPRITE_CONFIG.animate}
+            row={SPRITE_CONFIG.row}
             fps={SPRITE_CONFIG.fps}
             scale={SPRITE_CONFIG.scale}
           />
