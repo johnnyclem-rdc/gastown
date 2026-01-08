@@ -2,10 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import layoutData from "../config/town_layout.json";
 import Character from "./Character.jsx";
 import Zone from "./Zone.jsx";
-import mayorsOfficeSprite from "../assets/mayors-office.svg";
-import houseSprite from "../assets/house.svg";
-import reviewStationSprite from "../assets/review-station.svg";
-import mergeQueueSprite from "../assets/merge-queue.svg";
+
+// Building Assets
+import cityHallImg from "../assets/building_city_hall.png";
+import houseImg from "../assets/building_house_small.png";
+import officeImg from "../assets/building_office_large.png";
+import reviewStationImg from "../assets/building_review_station.png";
+import depotImg from "../assets/building_depot.png";
+
+// Character Assets
+import charMayor from "../assets/char_mayor.png";
+import charEngineer from "../assets/char_engineer.png";
+import charPolecat from "../assets/char_polecat.png";
 
 const TILE_WIDTH = 64;
 const TILE_HEIGHT = 32;
@@ -19,25 +27,31 @@ const statusToZone = {
 
 const zoneSprites = {
   city_hall: {
-    sprite: mayorsOfficeSprite,
+    sprite: cityHallImg,
     emoji: "🏛️"
   },
   approval_office: {
-    sprite: reviewStationSprite,
+    sprite: reviewStationImg,
     emoji: "📋"
   },
   merge_depot: {
-    sprite: mergeQueueSprite,
+    sprite: depotImg,
     emoji: "🚌"
   },
   residential_district: {
-    sprite: houseSprite,
+    sprite: houseImg,
     emoji: "🏡"
   },
   commercial_district: {
-    sprite: null,
+    sprite: officeImg,
     emoji: "🏢"
   }
+};
+
+const roleSprites = {
+  mayor: charMayor,
+  engineer: charEngineer,
+  polecat: charPolecat
 };
 
 function toIso(gridX, gridY, origin) {
@@ -75,13 +89,17 @@ export default function TownMap() {
     let isMounted = true;
 
     const fetchSnapshot = async () => {
-      const response = await fetch("/api/town/snapshot");
-      if (!response.ok) {
-        return;
-      }
-      const data = await response.json();
-      if (isMounted) {
-        setSnapshot(data);
+      try {
+        const response = await fetch("/api/town/snapshot");
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        if (isMounted) {
+          setSnapshot(data);
+        }
+      } catch (e) {
+        console.error("Failed to fetch snapshot", e);
       }
     };
 
@@ -150,7 +168,7 @@ export default function TownMap() {
         {zones.map((zone) => {
           const asset = zoneSprites[zone.key] ?? {};
           const position = toIso(zone.x, zone.y, origin);
-          const zIndex = zone.x + zone.y;
+          const zIndex = (zone.x + zone.y) * 10;
           return (
             <Zone
               key={zone.id}
@@ -179,13 +197,17 @@ export default function TownMap() {
                 }
               : coords;
           const isoPosition = toIso(adjustedCoords.x, adjustedCoords.y, origin);
-          const zIndex = adjustedCoords.x + adjustedCoords.y + 1;
+          const zIndex = (adjustedCoords.x + adjustedCoords.y) * 10 + 1;
+          const sprite = roleSprites[agent.role] ?? roleSprites["engineer"];
 
           return (
             <Character
               key={agent.name}
               name={agent.name}
-              title={`${agent.name} (${agent.status})`}
+              role={agent.role}
+              status={agent.status}
+              sprite={sprite}
+              title={`${agent.name} (${agent.role})`}
               position={isoPosition}
               zIndex={zIndex}
             />

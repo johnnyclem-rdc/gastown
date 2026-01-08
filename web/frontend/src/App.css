@@ -84,13 +84,44 @@ body {
 
 .character {
   position: absolute;
-  width: 28px;
-  height: 28px;
+  width: 48px;
+  height: 48px;
   transform: translate(-50%, -100%);
-  transition: all 1s linear;
+  transition: top 1s linear, left 1s linear;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.character-sprite img {
+  width: 48px;
+  height: auto;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+}
+
+.character-idle {
+  opacity: 0.6;
+}
+
+.status-indicator {
+  position: absolute;
+  top: -20px;
+  font-size: 20px;
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .character-avatar {
+  /* Legacy fallback style */
   width: 28px;
   height: 28px;
   border-radius: 999px;
