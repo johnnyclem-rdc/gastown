@@ -4,17 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gas Town Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         :root {
-            --bg-dark: #1a1a2e;
-            --bg-card: #16213e;
-            --text-primary: #eee;
-            --text-secondary: #aaa;
-            --border: #0f3460;
-            --green: #4ade80;
-            --yellow: #facc15;
-            --red: #f87171;
+            --bg: #E0E5EC;
+            --text-primary: #3D4852;
+            --text-muted: #6B7280;
+            --accent: #6C63FF;
+            --accent-light: #8B84FF;
+            --accent-secondary: #38B2AC;
+            --shadow-light: rgba(255, 255, 255, 0.55);
+            --shadow-dark: rgba(163, 177, 198, 0.65);
         }
 
         * {
@@ -23,123 +26,276 @@
             padding: 0;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
-            background: var(--bg-dark);
+            font-family: "DM Sans", system-ui, -apple-system, sans-serif;
+            background: var(--bg);
             color: var(--text-primary);
-            padding: 20px;
+            padding: 24px;
             min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+            letter-spacing: -0.02em;
         }
 
         .dashboard {
             max-width: 1200px;
             margin: 0 auto;
-        }
-
-        header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+            flex-direction: column;
+            gap: 32px;
         }
 
-        h1 {
-            font-size: 1.5rem;
+        .surface {
+            background: var(--bg);
+            border-radius: 32px;
+            box-shadow: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+        }
+
+        .surface.inset {
+            box-shadow: inset 10px 10px 20px rgba(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+        }
+
+        .surface.small {
+            border-radius: 16px;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+        }
+
+        .hero {
+            padding: 32px;
+            display: grid;
+            gap: 24px;
+            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .hero-eyebrow {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
             font-weight: 600;
         }
 
-        .refresh-info {
-            color: var(--text-secondary);
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 460px;
+        }
+
+        .refresh-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 999px;
             font-size: 0.875rem;
+            color: var(--text-muted);
         }
 
-        .convoy-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .convoy-table th,
-        .convoy-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .convoy-table th {
-            background: var(--bg-dark);
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .convoy-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .convoy-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        /* Status indicators */
-        .status-indicator {
-            display: inline-block;
+        .refresh-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            margin-right: 8px;
+            background: var(--accent-secondary);
+            box-shadow: 0 0 8px rgba(56, 178, 172, 0.5);
         }
 
-        .status-open .status-indicator {
-            background: var(--yellow);
+        .hero-actions {
+            display: grid;
+            gap: 16px;
         }
 
-        .status-closed .status-indicator {
-            background: var(--green);
+        .command-card {
+            padding: 20px 22px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* Work status badges */
-        .work-status {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
+        .command-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .command-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .command-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-family: "DM Sans", system-ui, sans-serif;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+        }
+
+        .command-chip span {
+            color: var(--text-muted);
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .stat-card {
+            padding: 18px 20px;
+            border-radius: 24px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 600;
         }
 
-        .work-complete .work-status {
-            background: var(--green);
-            color: var(--bg-dark);
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
         }
 
-        .work-active .work-status {
-            background: var(--green);
-            color: var(--bg-dark);
+        .stat-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
         }
 
-        .work-stale .work-status {
-            background: var(--yellow);
-            color: var(--bg-dark);
+        .section-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
 
-        .work-stuck .work-status {
-            background: var(--red);
-            color: var(--bg-dark);
+        .table-card {
+            padding: 24px;
+            border-radius: 32px;
         }
 
-        .work-waiting .work-status {
-            background: var(--text-secondary);
-            color: var(--bg-dark);
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
         }
 
-        /* Activity colors */
+        th,
+        td {
+            text-align: left;
+            padding: 14px 12px;
+        }
+
+        th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        tbody tr {
+            border-radius: 18px;
+            transition: transform 300ms ease-out, box-shadow 300ms ease-out;
+        }
+
+        tbody tr:hover {
+            transform: translateY(-1px);
+        }
+
+        tbody tr td {
+            border-bottom: 1px solid rgba(61, 72, 82, 0.08);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        .badge.complete {
+            color: var(--accent-secondary);
+        }
+
+        .badge.active {
+            color: var(--accent);
+        }
+
+        .badge.stale {
+            color: #d97706;
+        }
+
+        .badge.stuck {
+            color: #dc2626;
+        }
+
+        .badge.waiting {
+            color: var(--text-muted);
+        }
+
+        .convoy-id {
+            font-weight: 700;
+        }
+
+        .convoy-title {
+            color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        .progress {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-bar {
+            width: 100%;
+            max-width: 140px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
         .activity-dot {
             display: inline-block;
             width: 10px;
@@ -149,161 +305,71 @@
         }
 
         .activity-green .activity-dot {
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
+            background: var(--accent-secondary);
+            box-shadow: 0 0 8px rgba(56, 178, 172, 0.6);
         }
 
         .activity-yellow .activity-dot {
-            background: var(--yellow);
-            box-shadow: 0 0 8px var(--yellow);
+            background: #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
         }
 
         .activity-red .activity-dot {
-            background: var(--red);
-            box-shadow: 0 0 8px var(--red);
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
         }
 
         .activity-unknown .activity-dot {
-            background: var(--text-secondary);
-        }
-
-        .convoy-id {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .convoy-title {
-            color: var(--text-secondary);
-            margin-left: 8px;
-        }
-
-        .progress {
-            font-variant-numeric: tabular-nums;
-        }
-
-        .progress-bar {
-            width: 60px;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--green);
-            border-radius: 2px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 48px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state h2 {
-            font-size: 1.25rem;
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            font-size: 0.875rem;
-        }
-
-        .empty-state-inline {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-secondary);
-            background: var(--bg-card);
-            border-radius: 8px;
-        }
-
-        .empty-state-inline p {
-            font-size: 0.875rem;
-            margin: 0;
+            background: var(--text-muted);
         }
 
         .status-hint {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            max-width: 300px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            max-width: 320px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
-        .section-header {
-            margin-top: 32px;
-            margin-bottom: 16px;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        /* Merge queue colors */
         .mq-green {
-            background: rgba(74, 222, 128, 0.1);
+            color: var(--accent-secondary);
         }
 
         .mq-yellow {
-            background: rgba(250, 204, 21, 0.1);
+            color: #d97706;
         }
 
         .mq-red {
-            background: rgba(248, 113, 113, 0.1);
+            color: #dc2626;
         }
 
-        .ci-status, .merge-status {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
+        .pill {
+            display: inline-flex;
+            padding: 6px 12px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .ci-pass {
-            background: var(--green);
-            color: var(--bg-dark);
-        }
-
-        .ci-fail {
-            background: var(--red);
-            color: var(--bg-dark);
-        }
-
-        .ci-pending {
-            background: var(--yellow);
-            color: var(--bg-dark);
-        }
-
-        .merge-ready {
-            background: var(--green);
-            color: var(--bg-dark);
-        }
-
-        .merge-conflict {
-            background: var(--red);
-            color: var(--bg-dark);
-        }
-
-        .merge-pending {
-            background: var(--yellow);
-            color: var(--bg-dark);
+            font-weight: 600;
+            background: var(--bg);
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
         }
 
         .pr-link {
             color: var(--text-primary);
             text-decoration: none;
+            font-weight: 600;
         }
 
-        .pr-link:hover {
-            text-decoration: underline;
+        .pr-link:focus-visible,
+        .command-chip:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 3px;
         }
 
         .pr-title {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             margin-left: 8px;
-            max-width: 400px;
+            max-width: 420px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -311,7 +377,25 @@
             vertical-align: middle;
         }
 
-        /* htmx loading indicator */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state h2 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .empty-state.inline {
+            padding: 24px;
+        }
+
         .htmx-request .htmx-indicator {
             opacity: 1;
         }
@@ -320,138 +404,212 @@
             opacity: 0;
             transition: opacity 200ms ease-in;
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .hero {
+                padding: 24px;
+            }
+
+            .table-card {
+                padding: 20px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .convoy-title {
+                display: block;
+                margin-left: 0;
+                margin-top: 4px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="dashboard" hx-get="/" hx-trigger="every 10s" hx-swap="outerHTML">
-        <header>
-            <h1>🚚 Gas Town Convoys</h1>
-            <span class="refresh-info">
-                Auto-refresh: every 10s
-                <span class="htmx-indicator">⟳</span>
-            </span>
-        </header>
+        <section class="hero surface">
+            <div>
+                <div class="hero-eyebrow">Mayor Command</div>
+                <h1>Gas Town Town Hall</h1>
+                <p>Keep a tactile pulse on convoys, assets, and agents. This command surface is tuned for the Mayor to orchestrate the town with clarity and calm.</p>
+                <div class="refresh-badge surface small">
+                    <span class="refresh-dot"></span>
+                    Auto-refresh every 10s <span class="htmx-indicator">⟳</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <div class="command-card surface inset">
+                    <h3>Mayor Actions</h3>
+                    <p>Run these to coordinate across rigs and assets.</p>
+                    <div class="command-chip" tabindex="0">
+                        gt mail send mayor/ <span>-s "Status" -m "..."</span>
+                    </div>
+                    <div class="command-chip" tabindex="0">
+                        gt convoy create <span>&lt;name&gt; [issues...]</span>
+                    </div>
+                    <div class="command-chip" tabindex="0">
+                        gt convoy list <span>--status open</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        {{if .Convoys}}
-        <table class="convoy-table">
-            <thead>
-                <tr>
-                    <th>Status</th>
-                    <th>Convoy</th>
-                    <th>Progress</th>
-                    <th>Last Activity</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .Convoys}}
-                <tr class="{{workStatusClass .WorkStatus}}">
-                    <td>
-                        <span class="work-status">{{.WorkStatus}}</span>
-                    </td>
-                    <td>
-                        <span class="convoy-id">{{.ID}}</span>
-                        <span class="convoy-title">{{.Title}}</span>
-                    </td>
-                    <td class="progress">
-                        {{.Progress}}
-                        {{if .Total}}
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{progressPercent .Completed .Total}}%;"></div>
-                        </div>
-                        {{end}}
-                    </td>
-                    <td class="{{activityClass .LastActivity}}">
-                        <span class="activity-dot"></span>
-                        {{.LastActivity.FormattedAge}}
-                    </td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
-        {{else}}
-        <div class="empty-state">
-            <h2>No convoys found</h2>
-            <p>Create a convoy with: gt convoy create &lt;name&gt; [issues...]</p>
-        </div>
-        {{end}}
+        <section class="stats-grid">
+            <div class="stat-card surface">
+                <div class="stat-label">Active convoys</div>
+                <div class="stat-value">{{len .Convoys}}</div>
+                <div class="stat-meta">Tracking assets in motion</div>
+            </div>
+            <div class="stat-card surface">
+                <div class="stat-label">Merge queue</div>
+                <div class="stat-value">{{len .MergeQueue}}</div>
+                <div class="stat-meta">Refinery-ready changes</div>
+            </div>
+            <div class="stat-card surface">
+                <div class="stat-label">Polecat agents</div>
+                <div class="stat-value">{{len .Polecats}}</div>
+                <div class="stat-meta">Field operators online</div>
+            </div>
+        </section>
 
-        <h2 class="section-header">🔀 Refinery Merge Queue</h2>
-        {{if .MergeQueue}}
-        <table class="convoy-table">
-            <thead>
-                <tr>
-                    <th>PR #</th>
-                    <th>Repo</th>
-                    <th>Title</th>
-                    <th>CI Status</th>
-                    <th>Mergeable</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .MergeQueue}}
-                <tr class="{{.ColorClass}}">
-                    <td>
-                        <a href="{{.URL}}" target="_blank" class="pr-link">#{{.Number}}</a>
-                    </td>
-                    <td>{{.Repo}}</td>
-                    <td>
-                        <span class="pr-title">{{.Title}}</span>
-                    </td>
-                    <td>
-                        {{if eq .CIStatus "pass"}}
-                        <span class="ci-status ci-pass">✓ Pass</span>
-                        {{else if eq .CIStatus "fail"}}
-                        <span class="ci-status ci-fail">✗ Fail</span>
-                        {{else}}
-                        <span class="ci-status ci-pending">⏳ Pending</span>
+        <section>
+            <h2 class="section-header">Convoys &amp; Asset Progress</h2>
+            {{if .Convoys}}
+            <div class="table-card surface">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Convoy</th>
+                            <th>Progress</th>
+                            <th>Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Convoys}}
+                        <tr class="{{workStatusClass .WorkStatus}}">
+                            <td>
+                                <span class="badge {{.WorkStatus}}">{{.WorkStatus}}</span>
+                            </td>
+                            <td>
+                                <span class="convoy-id">{{.ID}}</span>
+                                <span class="convoy-title">{{.Title}}</span>
+                            </td>
+                            <td class="progress">
+                                {{.Progress}}
+                                {{if .Total}}
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {{progressPercent .Completed .Total}}%;"></div>
+                                </div>
+                                {{end}}
+                            </td>
+                            <td class="{{activityClass .LastActivity}}">
+                                <span class="activity-dot"></span>
+                                {{.LastActivity.FormattedAge}}
+                            </td>
+                        </tr>
                         {{end}}
-                    </td>
-                    <td>
-                        {{if eq .Mergeable "ready"}}
-                        <span class="merge-status merge-ready">Ready</span>
-                        {{else if eq .Mergeable "conflict"}}
-                        <span class="merge-status merge-conflict">Conflict</span>
-                        {{else}}
-                        <span class="merge-status merge-pending">Pending</span>
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state surface inset">
+                <h2>No convoys in motion</h2>
+                <p>Create a convoy with: <strong>gt convoy create &lt;name&gt; [issues...]</strong></p>
+            </div>
+            {{end}}
+        </section>
+
+        <section>
+            <h2 class="section-header">Refinery Merge Queue</h2>
+            {{if .MergeQueue}}
+            <div class="table-card surface">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PR</th>
+                            <th>Repo</th>
+                            <th>Title</th>
+                            <th>CI Status</th>
+                            <th>Mergeable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .MergeQueue}}
+                        <tr>
+                            <td>
+                                <a href="{{.URL}}" target="_blank" class="pr-link">#{{.Number}}</a>
+                            </td>
+                            <td>{{.Repo}}</td>
+                            <td>
+                                <span class="pr-title">{{.Title}}</span>
+                            </td>
+                            <td>
+                                {{if eq .CIStatus "pass"}}
+                                <span class="pill mq-green">✓ Pass</span>
+                                {{else if eq .CIStatus "fail"}}
+                                <span class="pill mq-red">✗ Fail</span>
+                                {{else}}
+                                <span class="pill mq-yellow">⏳ Pending</span>
+                                {{end}}
+                            </td>
+                            <td>
+                                {{if eq .Mergeable "ready"}}
+                                <span class="pill mq-green">Ready</span>
+                                {{else if eq .Mergeable "conflict"}}
+                                <span class="pill mq-red">Conflict</span>
+                                {{else}}
+                                <span class="pill mq-yellow">Pending</span>
+                                {{end}}
+                            </td>
+                        </tr>
                         {{end}}
-                    </td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
-        {{else}}
-        <div class="empty-state-inline">
-            <p>No PRs in queue</p>
-        </div>
-        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            {{else}}
+            <div class="empty-state inline surface inset">
+                <p>No PRs in queue</p>
+            </div>
+            {{end}}
+        </section>
 
         {{if .Polecats}}
-        <h2 class="section-header">🐾 Polecat Workers</h2>
-        <table class="convoy-table">
-            <thead>
-                <tr>
-                    <th>Polecat</th>
-                    <th>Rig</th>
-                    <th>Last Activity</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{range .Polecats}}
-                <tr>
-                    <td>
-                        <span class="convoy-id">{{.Name}}</span>
-                    </td>
-                    <td>{{.Rig}}</td>
-                    <td class="{{activityClass .LastActivity}}">
-                        <span class="activity-dot"></span>
-                        {{.LastActivity.FormattedAge}}
-                    </td>
-                    <td class="status-hint">{{.StatusHint}}</td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
+        <section>
+            <h2 class="section-header">Polecat Agents &amp; Field Operations</h2>
+            <div class="table-card surface">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Polecat</th>
+                            <th>Rig</th>
+                            <th>Last Activity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Polecats}}
+                        <tr>
+                            <td>
+                                <span class="convoy-id">{{.Name}}</span>
+                            </td>
+                            <td>{{.Rig}}</td>
+                            <td class="{{activityClass .LastActivity}}">
+                                <span class="activity-dot"></span>
+                                {{.LastActivity.FormattedAge}}
+                            </td>
+                            <td class="status-hint">{{.StatusHint}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </section>
         {{end}}
     </div>
 </body>

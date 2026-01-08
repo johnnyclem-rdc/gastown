@@ -184,14 +184,16 @@ func TestConvoyTemplate_StatusIndicators(t *testing.T) {
 	data := ConvoyData{
 		Convoys: []ConvoyRow{
 			{
-				ID:     "hq-cv-open",
-				Title:  "Open Convoy",
-				Status: "open",
+				ID:         "hq-cv-open",
+				Title:      "Open Convoy",
+				Status:     "open",
+				WorkStatus: "active",
 			},
 			{
-				ID:     "hq-cv-closed",
-				Title:  "Closed Convoy",
-				Status: "closed",
+				ID:         "hq-cv-closed",
+				Title:      "Closed Convoy",
+				Status:     "closed",
+				WorkStatus: "complete",
 			},
 		},
 	}
@@ -205,11 +207,11 @@ func TestConvoyTemplate_StatusIndicators(t *testing.T) {
 	output := buf.String()
 
 	// Check status indicators
-	if !strings.Contains(output, "status-open") {
-		t.Error("Template should contain status-open class")
+	if !strings.Contains(output, "badge active") {
+		t.Error("Template should contain active badge class")
 	}
-	if !strings.Contains(output, "status-closed") {
-		t.Error("Template should contain status-closed class")
+	if !strings.Contains(output, "badge complete") {
+		t.Error("Template should contain complete badge class")
 	}
 }
 
