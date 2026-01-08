@@ -244,7 +244,13 @@ export default function TownMap() {
     if (!isDragging) return;
     const dx = e.clientX - lastMousePos.current.x;
     const dy = e.clientY - lastMousePos.current.y;
-    setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+    
+    // Divide by scale to ensure 1:1 movement match with cursor
+    setOffset((prev) => ({ 
+      x: prev.x + (dx / scale), 
+      y: prev.y + (dy / scale) 
+    }));
+    
     lastMousePos.current = { x: e.clientX, y: e.clientY };
   };
 
@@ -260,7 +266,7 @@ export default function TownMap() {
           position: "absolute",
           top: "10px",
           right: "10px",
-          zIndex: 3000,
+          zIndex: 5000,
           padding: "8px 16px",
           background: isDemoMode ? "#2563eb" : "#e5e7eb",
           color: isDemoMode ? "white" : "black",
@@ -274,7 +280,7 @@ export default function TownMap() {
         {isDemoMode ? "Disable Demo" : "Enable Demo"}
       </button>
 
-      <div className="map-controls">
+      <div className="map-controls" style={{ zIndex: 5000 }}>
          <button className="control-btn" onClick={() => setScale(s => Math.min(s + 0.2, 3))}>+</button>
          <button className="control-btn" onClick={() => setScale(s => Math.max(s - 0.2, 0.2))}>-</button>
          <button className="control-btn" onClick={() => { setScale(1); setOffset({x:0,y:0}); }}>⟲</button>
