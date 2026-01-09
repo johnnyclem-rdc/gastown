@@ -33,8 +33,7 @@ export default function Character({
             frameHeight={SPRITE_CONFIG.frameHeight}
             animate
             row={animationRow}
-            fps={SPRITE_CONFIG.fps}
-            scale={SPRITE_CONFIG.scale}
+            fps={8}
           />
         ) : (
           <div className="character-avatar">{name?.charAt(0) ?? "?"}</div>
